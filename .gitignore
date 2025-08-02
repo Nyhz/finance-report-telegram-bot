@@ -8,3 +8,5 @@ dist/
 # Private files
 src/assets.json
 src/prices.csv
+src/weekly_prices.csv
+src/monthly_prices.csv
