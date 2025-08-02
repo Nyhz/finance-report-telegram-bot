@@ -38,7 +38,9 @@ export async function sendDailySummary(): Promise<string> {
   let message = `📊 <b>Resumen de tus Activos Financieros</b>\n<b>${fechaStr}</b>\n\n`
 
   for (const categoria in assets) {
-    for (const asset of assets[categoria]) {
+    const lista = assets[categoria]
+    if (!Array.isArray(lista) || lista.length === 0) continue
+    for (const asset of lista) {
       const precioHoy = await fetchPrice(asset.ticker)
       const valorTotal = precioHoy * asset.cantidad
       totalGlobal += valorTotal
@@ -53,9 +55,11 @@ export async function sendDailySummary(): Promise<string> {
   message += `━━━━━━━━━━━━━━━━━━\n\n`
 
   for (const categoria in assets) {
+    const lista = assets[categoria]
+    if (!Array.isArray(lista) || lista.length === 0) continue
     message += `🗂 <b>${categoria}</b>\n`
     message += `──────────────────\n`
-    for (const asset of assets[categoria]) {
+    for (const asset of lista) {
       const precioHoy =
         newPrices.find((p) => p.ticker === asset.ticker)?.precio ?? 0
       const precioAyer = prevPrices[asset.ticker] ?? precioHoy
@@ -119,9 +123,11 @@ export function getStatusWithSavedPrices(): string {
   })}  ⬅️⬅️</b>\n`
   message += `━━━━━━━━━━━━━━━━━━\n\n`
   for (const categoria in assets) {
+    const lista = assets[categoria]
+    if (!Array.isArray(lista) || lista.length === 0) continue
     message += `🗂 <b>${categoria}</b>\n`
     message += `──────────────────\n`
-    for (const asset of assets[categoria]) {
+    for (const asset of lista) {
       const precioHoy = prevPrices[asset.ticker] ?? 0
       const valorTotal = precioHoy * asset.cantidad
       message += `• <b>${asset.nombre}</b>\n`
