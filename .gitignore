@@ -1,0 +1,10 @@
+# Node
+node_modules/
+dist/
+.env
+*.log
+# VSCode
+.vscode/
+# Private files
+src/assets.json
+src/prices.csv
