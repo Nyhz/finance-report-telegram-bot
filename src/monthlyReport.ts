@@ -22,12 +22,16 @@ export async function sendMonthlyReport(): Promise<string> {
   const assets: AssetsByCategory = JSON.parse(data)
 
   let prevPrices: Record<string, number> = {}
+  let hasPrevPrices = false
   if (fs.existsSync(monthlyCsvPath)) {
     const csvContent = fs.readFileSync(monthlyCsvPath, "utf-8")
     const records = parse(csvContent, { columns: true })
     for (const row of records) {
       const r = row as any
       prevPrices[r.ticker] = parseFloat(r.precio)
+    }
+    if (Object.keys(prevPrices).length > 0) {
+      hasPrevPrices = true
     }
   }
 
@@ -55,10 +59,11 @@ export async function sendMonthlyReport(): Promise<string> {
   }
 
   let variacionGlobal = 0
-  if (totalPrevio > 0) {
+  let simboloGlobal = "→"
+  if (hasPrevPrices && totalPrevio > 0) {
     variacionGlobal = ((totalGlobal - totalPrevio) / totalPrevio) * 100
+    simboloGlobal = variacionGlobal >= 0 ? "↑" : "↓"
   }
-  const simboloGlobal = variacionGlobal >= 0 ? "↑" : "↓"
   message += `━━━━━━━━━━━━━━━━━━\n`
   message += `<b>TOTAL: €${totalGlobal.toLocaleString("es-ES", {
     minimumFractionDigits: 2,
@@ -74,10 +79,16 @@ export async function sendMonthlyReport(): Promise<string> {
     for (const asset of lista) {
       const precioHoy =
         newPrices.find((p) => p.ticker === asset.ticker)?.precio ?? 0
-      const precioMesPasado = prevPrices[asset.ticker] ?? precioHoy
-      const variacion = ((precioHoy - precioMesPasado) / precioMesPasado) * 100
-      const simbolo = variacion >= 0 ? "↑" : "↓"
-      const emoji = variacion >= 0 ? "📈" : "📉"
+      let precioMesPasado = precioHoy
+      let variacion = 0
+      let simbolo = "→"
+      let emoji = "➖"
+      if (hasPrevPrices && prevPrices[asset.ticker] !== undefined) {
+        precioMesPasado = prevPrices[asset.ticker]
+        variacion = ((precioHoy - precioMesPasado) / precioMesPasado) * 100
+        simbolo = variacion >= 0 ? "↑" : "↓"
+        emoji = variacion >= 0 ? "📈" : "📉"
+      }
       message += `${emoji} <b>${asset.nombre}</b>\n`
       message += `Valor previo: <b>€${precioMesPasado.toLocaleString("es-ES", {
         minimumFractionDigits: 2,
