@@ -1,3 +1,9 @@
+export const CATEGORY_LABELS: Record<string, string> = {
+  fi: "Fondos Indexados",
+  etf: "ETFs",
+  crypto: "Cryptomonedas",
+  stock: "Acciones",
+}
 import fs from "fs"
 import path from "path"
 import { parse } from "csv-parse/sync"
@@ -57,7 +63,8 @@ export async function sendDailySummary(): Promise<string> {
   for (const categoria in assets) {
     const lista = assets[categoria]
     if (!Array.isArray(lista) || lista.length === 0) continue
-    message += `🗂 <b>${categoria}</b>\n`
+    const label = CATEGORY_LABELS[categoria] || categoria
+    message += `🗂 <b>${label}</b>\n`
     message += `──────────────────\n`
     for (const asset of lista) {
       const precioHoy =
@@ -125,7 +132,8 @@ export function getStatusWithSavedPrices(): string {
   for (const categoria in assets) {
     const lista = assets[categoria]
     if (!Array.isArray(lista) || lista.length === 0) continue
-    message += `🗂 <b>${categoria}</b>\n`
+    const label = CATEGORY_LABELS[categoria] || categoria
+    message += `🗂 <b>${label}</b>\n`
     message += `──────────────────\n`
     for (const asset of lista) {
       const precioHoy = prevPrices[asset.ticker] ?? 0

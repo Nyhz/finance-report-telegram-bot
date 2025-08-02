@@ -1,6 +1,7 @@
 import fs from "fs"
 import path from "path"
 import TelegramBot from "node-telegram-bot-api"
+import { CATEGORY_LABELS } from "../utils"
 
 export function registerListCommand(bot: TelegramBot, chatId: string) {
   bot.onText(/\/list/, async (msg: any) => {
@@ -12,7 +13,8 @@ export function registerListCommand(bot: TelegramBot, chatId: string) {
     for (const categoria in assets) {
       const lista = assets[categoria]
       if (!Array.isArray(lista) || lista.length === 0) continue
-      response += `🗂 <b>${categoria.toUpperCase()}</b>\n`
+      const label = CATEGORY_LABELS[categoria] || categoria
+      response += `🗂 <b>${label}</b>\n`
       for (const asset of lista) {
         response += `- ${asset.nombre} - <code>${asset.id}</code>\n`
       }
