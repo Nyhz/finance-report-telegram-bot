@@ -35,15 +35,25 @@ export async function sendMonthlyReport(): Promise<string> {
     }
   }
 
+  // Calcular el día 1 del mes actual y del mes anterior
   const hoy = new Date()
-  const mes = hoy.toLocaleString("es-ES", { month: "long" })
-  const anio = hoy.getFullYear()
+  const primerDiaMesActual = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+  const primerDiaMesAnterior = new Date(
+    hoy.getFullYear(),
+    hoy.getMonth() - 1,
+    1
+  )
+  const mesAnteriorNombre = primerDiaMesAnterior.toLocaleString("es-ES", {
+    month: "long",
+  })
+  const anioAnterior = primerDiaMesAnterior.getFullYear()
+  // El reporte es del mes anterior, comparando precios del 1 del mes anterior vs 1 del mes actual
   let newPrices: { ticker: string; precio: number }[] = []
   let totalGlobal = 0
   let totalPrevio = 0
   let message = `📅 <b>Reporte Mensual de tus Activos</b>\n<b>${
-    mes.charAt(0).toUpperCase() + mes.slice(1)
-  } ${anio}</b>\n\n`
+    mesAnteriorNombre.charAt(0).toUpperCase() + mesAnteriorNombre.slice(1)
+  } ${anioAnterior}</b>\n\n`
 
   for (const categoria in assets) {
     const lista = assets[categoria]

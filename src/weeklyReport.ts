@@ -36,16 +36,22 @@ export async function sendWeeklyReport(): Promise<string> {
   }
 
   const hoy = new Date()
-  const fechaStr = hoy.toLocaleDateString("es-ES")
-  // Calcular fecha de inicio de semana (lunes)
-  const start = new Date(hoy)
+  // Calcular el lunes actual (hoy si es lunes, sino el lunes más reciente)
   const day = hoy.getDay() || 7
-  if (day !== 1) start.setDate(hoy.getDate() - day + 1)
-  const startStr = start.toLocaleDateString("es-ES")
+  let finSemana = new Date(hoy)
+  if (day !== 1) {
+    // Si no es lunes, el reporte no debería ejecutarse, pero por si acaso:
+    finSemana.setDate(hoy.getDate() - day + 1)
+  }
+  // El lunes anterior es 7 días antes del lunes actual
+  let inicioSemana = new Date(finSemana)
+  inicioSemana.setDate(finSemana.getDate() - 7)
+  const startStr = inicioSemana.toLocaleDateString("es-ES")
+  const fechaStr = finSemana.toLocaleDateString("es-ES")
   let newPrices: { ticker: string; precio: number }[] = []
   let totalGlobal = 0
   let totalPrevio = 0
-  let message = `📅 <b>Reporte Semanal de tus Activos</b>\n<b>Del ${startStr} al ${fechaStr}</b>\n\n`
+  let message = `📅 <b>Reporte Semanal de tus Activos</b>\n<b>Semana del ${startStr} al ${fechaStr}</b>\n\n`
 
   for (const categoria in assets) {
     const lista = assets[categoria]

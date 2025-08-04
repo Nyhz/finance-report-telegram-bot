@@ -5,7 +5,6 @@ import { registerStatusCommand } from "./actions/status"
 import { registerAddCommands } from "./actions/add"
 import { registerHelpCommand } from "./actions/help"
 import { registerListCommand } from "./actions/list"
-import { registerMonthlyCommand } from "./actions/monthly"
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || "YOUR_TELEGRAM_BOT_TOKEN"
 const CHAT_ID = process.env.CHAT_ID || "YOUR_CHAT_ID"
